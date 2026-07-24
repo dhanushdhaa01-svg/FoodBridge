@@ -1,20 +1,40 @@
+import 'dotenv/config';
+import mongoose from 'mongoose';
 import app from './app.js';
+import connectDB from './config/db.js';
 
 const PORT = process.env.PORT || 5000;
 
-const server = app.listen(PORT, () => {
-  console.log(`🚀 FoodBridge API running on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
 
-server.on('error', (error) => {
-  console.error('Server failed to start:', error.message);
-  process.exit(1);
-});
+    const server = app.listen(PORT, () => {
+      console.log(`🚀 FoodBridge API running on port ${PORT}`);
+    });
 
-process.on('SIGINT', () => {
-  console.log('\nShutting down server...');
-  server.close(() => {
-    console.log('Server stopped successfully.');
-    process.exit(0);
-  });
-});
+    server.on('error', (error) => {
+      console.error('Server failed to start:', error.message);
+      process.exit(1);
+    });
+
+    process.on('SIGINT', () => {
+      console.log('\nShutting down server...');
+      server.close(async () => {
+        try {
+          await mongoose.connection.close();
+          console.log('MongoDB connection closed.');
+        } catch (error) {
+          console.error('Error closing MongoDB connection:', error.message);
+        }
+        console.log('Server stopped successfully.');
+        process.exit(0);
+      });
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
