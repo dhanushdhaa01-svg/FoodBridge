@@ -1,9 +1,25 @@
 import mongoose from 'mongoose';
+import { config } from './env.js';
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log('✅ MongoDB connected successfully');
+    const conn = await mongoose.connect(config.db.uri, {
+      serverSelectionTimeoutMS: config.db.serverSelectionTimeoutMS,
+    });
+
+    console.log(`✅ MongoDB connected: ${conn.connection.host}`);
+
+    mongoose.connection.on('disconnected', () => {
+      console.warn('⚠️  MongoDB disconnected. Attempting to reconnect...');
+    });
+
+    mongoose.connection.on('reconnected', () => {
+      console.log('✅ MongoDB reconnected successfully.');
+    });
+
+    mongoose.connection.on('error', (err) => {
+      console.error('❌ MongoDB connection error:', err.message);
+    });
   } catch (error) {
     console.error('❌ MongoDB connection failed:', error.message);
     throw error;
