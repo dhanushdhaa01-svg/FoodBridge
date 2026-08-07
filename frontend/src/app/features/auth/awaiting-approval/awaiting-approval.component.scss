@@ -1,0 +1,87 @@
+.auth-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.awaiting-card {
+  width: 100%;
+  max-width: 480px;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.awaiting-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #fff3e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.logo-icon {
+  font-size: 40px;
+  height: 40px;
+  width: 40px;
+  color: #ff9800;
+}
+
+.awaiting-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.awaiting-message {
+  margin: 0;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.awaiting-subtext {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.awaiting-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 16px;
+    align-items: flex-start;
+    padding-top: 48px;
+  }
+
+  .awaiting-card {
+    padding: 24px 16px;
+  }
+
+  .awaiting-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .awaiting-actions button {
+    width: 100%;
+  }
+}

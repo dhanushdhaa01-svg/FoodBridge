@@ -1,0 +1,101 @@
+<div class="auth-container">
+  <mat-card class="auth-card">
+    <mat-card-header>
+      <mat-card-title class="auth-title">Create Account</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Full Name</mat-label>
+          <input matInput formControlName="fullName" autocomplete="name">
+          <mat-error *ngIf="fullName?.hasError('required')">Full name is required</mat-error>
+          <mat-error *ngIf="fullName?.hasError('minlength')">Full name is too short</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" autocomplete="email">
+          <mat-error *ngIf="email?.hasError('required')">Email is required</mat-error>
+          <mat-error *ngIf="email?.hasError('email')">Please enter a valid email</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Phone</mat-label>
+          <input matInput formControlName="phone" type="tel" autocomplete="tel">
+          <mat-error *ngIf="phone?.hasError('required')">Phone number is required</mat-error>
+          <mat-error *ngIf="phone?.hasError('pattern')">Please enter a valid 10-digit Indian phone number</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Role</mat-label>
+          <mat-select formControlName="role">
+            <mat-option value="donor">Donor</mat-option>
+            <mat-option value="ngo">NGO</mat-option>
+          </mat-select>
+          <mat-error *ngIf="role?.hasError('required')">Please select a role</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width" *ngIf="registerForm.get('role')?.value === 'ngo'">
+          <mat-label>Organization Name</mat-label>
+          <input matInput formControlName="organizationName">
+          <mat-error *ngIf="organizationName?.hasError('required')">Organization name is required for NGOs</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Address</mat-label>
+          <textarea matInput formControlName="address" rows="2"></textarea>
+          <mat-error *ngIf="address?.hasError('required')">Address is required</mat-error>
+        </mat-form-field>
+
+        <div class="row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>City</mat-label>
+            <input matInput formControlName="city">
+            <mat-error *ngIf="city?.hasError('required')">City is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>State</mat-label>
+            <input matInput formControlName="state">
+            <mat-error *ngIf="state?.hasError('required')">State is required</mat-error>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Pincode</mat-label>
+          <input matInput formControlName="pincode">
+          <mat-error *ngIf="pincode?.hasError('required')">Pincode is required</mat-error>
+          <mat-error *ngIf="pincode?.hasError('pattern')">Please enter a valid 6-digit pincode</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password" autocomplete="new-password">
+          <button mat-icon-button matSuffix (click)="togglePasswordVisibility()" type="button" [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'">
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="password?.hasError('required')">Password is required</mat-error>
+          <mat-error *ngIf="password?.hasError('minlength')">Password must be at least 8 characters</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirm Password</mat-label>
+          <input matInput [type]="hideConfirmPassword() ? 'password' : 'text'" formControlName="confirmPassword" autocomplete="new-password">
+          <button mat-icon-button matSuffix (click)="toggleConfirmPasswordVisibility()" type="button" [attr.aria-label]="hideConfirmPassword() ? 'Show password' : 'Hide password'">
+            <mat-icon>{{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="confirmPassword?.hasError('required')">Please confirm your password</mat-error>
+          <mat-error *ngIf="registerForm.hasError('passwordMismatch') && confirmPassword?.touched">Passwords do not match</mat-error>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" class="submit-button" [disabled]="registerForm.invalid || isSubmitting()">
+          <mat-spinner *ngIf="isSubmitting()" diameter="20" color="accent"></mat-spinner>
+          <span *ngIf="!isSubmitting()">Register</span>
+        </button>
+      </form>
+    </mat-card-content>
+    <mat-card-actions class="auth-actions">
+      <p>Already have an account? <a mat-button [routerLink]="appRoutes.LOGIN">Login</a></p>
+    </mat-card-actions>
+  </mat-card>
+</div>

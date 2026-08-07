@@ -1,0 +1,22 @@
+<div class="auth-container">
+  <mat-card class="auth-card awaiting-card">
+    <mat-card-content class="awaiting-content">
+      <div class="logo-placeholder">
+        <mat-icon class="logo-icon">hourglass_empty</mat-icon>
+      </div>
+      <h2 class="awaiting-title">Awaiting Approval</h2>
+      <p class="awaiting-message">Your account is awaiting administrator approval.</p>
+      <p class="awaiting-subtext">We will notify you once your account has been reviewed. This usually takes 1-2 business days.</p>
+      <div class="awaiting-actions">
+        <button mat-stroked-button color="warn" (click)="onLogout()">
+          <mat-icon>logout</mat-icon>
+          Logout
+        </button>
+        <button mat-raised-button color="primary" (click)="refreshStatus()" [disabled]="isRefreshing()">
+          <mat-spinner *ngIf="isRefreshing()" diameter="20" color="accent"></mat-spinner>
+          <span *ngIf="!isRefreshing()">Refresh Status</span>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
