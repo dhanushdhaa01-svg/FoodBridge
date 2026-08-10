@@ -1,14 +1,13 @@
-.dashboard-placeholder {
+.dashboard-page {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  padding: 24px;
+  min-height: 400px;
   text-align: center;
+  gap: 16px;
 }
 
 .placeholder-message {
   color: rgba(0, 0, 0, 0.6);
-  margin-bottom: 24px;
 }

@@ -1,20 +1,24 @@
 import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 
 import { AuthService } from '../../core/services/auth.service';
 import { APP_ROUTES } from '../../core/constants/app.routes';
 
 @Component({
-  selector: 'app-dashboard-placeholder',
+  selector: 'app-dashboard',
   standalone: true,
-  templateUrl: './dashboard-placeholder.component.html',
-  styleUrl: './dashboard-placeholder.component.scss',
-  imports: [MatButtonModule]
+  templateUrl: './dashboard.component.html',
+  styleUrl: './dashboard.component.scss',
+  imports: [CommonModule, RouterModule, MatButtonModule]
 })
-export class DashboardPlaceholderComponent {
+export class DashboardComponent {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
+
+  readonly appRoutes = APP_ROUTES;
 
   onLogout(): void {
     this.authService.logout();

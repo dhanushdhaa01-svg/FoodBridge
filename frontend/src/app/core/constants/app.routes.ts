@@ -12,6 +12,6 @@ export type AppRoute = typeof APP_ROUTES[keyof typeof APP_ROUTES];
 /**
  * Route documentation
  *
- * DASHBOARD: Placeholder for future Dashboard milestone.
+ * DASHBOARD: Primary authenticated route.
  *            Will be implemented after complete Angular Authentication Module is committed.
  */
