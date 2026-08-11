@@ -1,0 +1,11 @@
+<div class="quick-actions">
+  <h2>Quick Actions</h2>
+  <div class="actions-grid">
+    @for (action of actions(); track action.label) {
+      <button mat-stroked-button color="primary" disabled type="button">
+        <mat-icon>{{ action.icon }}</mat-icon>
+        <span>{{ action.label }}</span>
+      </button>
+    }
+  </div>
+</div>

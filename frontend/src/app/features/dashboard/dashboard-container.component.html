@@ -1,0 +1,74 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <div>
+      <h1>Welcome back, {{ userName() }}</h1>
+      <p class="role-badge">{{ userRole() | titlecase }} Dashboard</p>
+    </div>
+  </header>
+
+  @if (user(); as currentUser) {
+    <div class="dashboard-content">
+      <app-profile-card [user]="currentUser" />
+
+      <app-quick-actions [role]="currentUser.role" />
+
+      <div class="dashboard-sections">
+        @if (currentUser.role === 'donor') {
+          <section class="dashboard-section">
+            <h2>Donation Activity</h2>
+            <app-empty-state
+              title="No donations yet"
+              message="Donation activity will appear here once you create your first donation."
+              icon="volunteer_activism">
+            </app-empty-state>
+          </section>
+        }
+
+        @if (currentUser.role === 'ngo') {
+          <section class="dashboard-section">
+            <h2>Available Food Donations</h2>
+            <app-empty-state
+              title="No donations available"
+              message="Available food donations will appear here once donors create them."
+              icon="restaurant">
+            </app-empty-state>
+          </section>
+
+          <section class="dashboard-section">
+            <h2>My Claims</h2>
+            <app-empty-state
+              title="No claims yet"
+              message="Claim activity will appear here once you start claiming donations."
+              icon="handshake">
+            </app-empty-state>
+          </section>
+        }
+
+        @if (currentUser.role === 'admin') {
+          <section class="dashboard-section">
+            <h2>System Overview</h2>
+            <app-empty-state
+              title="System statistics coming soon"
+              message="Platform-wide statistics will appear here once the analytics module is available."
+              icon="admin_panel_settings">
+            </app-empty-state>
+          </section>
+
+          <section class="dashboard-section">
+            <h2>Pending NGO Approvals</h2>
+            <app-empty-state
+              title="No pending approvals"
+              message="NGO registration requests will appear here for review."
+              icon="pending">
+            </app-empty-state>
+          </section>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="dashboard-loading">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Loading dashboard...</p>
+    </div>
+  }
+</div>

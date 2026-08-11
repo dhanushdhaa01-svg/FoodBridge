@@ -1,0 +1,39 @@
+<mat-card class="profile-card">
+  <mat-card-header>
+    <div class="profile-avatar">
+      <mat-icon>account_circle</mat-icon>
+    </div>
+    <div class="profile-header-text">
+      <mat-card-title>{{ user.fullName }}</mat-card-title>
+      <mat-card-subtitle>{{ user.role | titlecase }}</mat-card-subtitle>
+    </div>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="profile-details">
+      <div class="profile-row">
+        <mat-icon>email</mat-icon>
+        <span>{{ user.email }}</span>
+      </div>
+      <div class="profile-row">
+        <mat-icon>phone</mat-icon>
+        <span>{{ user.phone }}</span>
+      </div>
+      @if (user.organizationName) {
+        <div class="profile-row">
+          <mat-icon>business</mat-icon>
+          <span>{{ user.organizationName }}</span>
+        </div>
+      }
+      <div class="profile-row">
+        <mat-icon>location_on</mat-icon>
+        <span>{{ user.address }}, {{ user.city }}, {{ user.state }} - {{ user.pincode }}</span>
+      </div>
+      <div class="profile-row">
+        <mat-icon>verified</mat-icon>
+        <span [class.approved]="user.isApproved" [class.pending]="!user.isApproved">
+          {{ user.isApproved ? 'Approved' : 'Pending Approval' }}
+        </span>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

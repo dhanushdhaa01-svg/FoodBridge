@@ -3,7 +3,7 @@ import { LoginComponent } from './features/auth/login/login.component';
 import { RegisterComponent } from './features/auth/register/register.component';
 import { AwaitingApprovalComponent } from './features/auth/awaiting-approval/awaiting-approval.component';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
-import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { DashboardContainerComponent } from './features/dashboard/dashboard-container.component';
 import { UnauthorizedComponent } from './shared/pages/unauthorized.component';
 import { NotFoundComponent } from './shared/pages/not-found.component';
 
@@ -27,8 +27,8 @@ export const routes: Routes = [
     component: MainLayoutComponent,
     canActivate: [RootGuard],
     children: [
-      { path: '', component: DashboardComponent },
-      { path: ROUTE_SEGMENTS.DASHBOARD, component: DashboardComponent },
+      { path: '', component: DashboardContainerComponent },
+      { path: ROUTE_SEGMENTS.DASHBOARD, component: DashboardContainerComponent },
       { path: ROUTE_SEGMENTS.UNAUTHORIZED, component: UnauthorizedComponent }
     ]
   },

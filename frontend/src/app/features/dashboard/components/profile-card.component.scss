@@ -1,0 +1,88 @@
+.profile-card {
+  width: 100%;
+}
+
+.profile-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: rgba(25, 118, 210, 0.12);
+  color: #1976d2;
+}
+
+.profile-avatar mat-icon {
+  font-size: 32px;
+  height: 32px;
+  width: 32px;
+}
+
+.profile-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-header-text mat-card-title {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.profile-header-text mat-card-subtitle {
+  text-transform: capitalize;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.profile-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.profile-row mat-icon {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+}
+
+.profile-row span {
+  font-size: 14px;
+}
+
+.profile-row .approved {
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.profile-row .pending {
+  color: #ed6c02;
+  font-weight: 500;
+}
+
+@media (max-width: 480px) {
+  .profile-avatar {
+    width: 48px;
+    height: 48px;
+  }
+
+  .profile-avatar mat-icon {
+    font-size: 28px;
+    height: 28px;
+    width: 28px;
+  }
+
+  .profile-header-text mat-card-title {
+    font-size: 18px;
+  }
+}
