@@ -1,3 +1,16 @@
+.auth-brand {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.auth-brand h1 {
+  font-size: 32px;
+  font-weight: 500;
+  color: #1976d2;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
 .auth-container {
   display: flex;
   align-items: center;
@@ -5,6 +18,7 @@
   min-height: 100vh;
   padding: 24px;
   box-sizing: border-box;
+  flex-direction: column;
 }
 
 .auth-card {

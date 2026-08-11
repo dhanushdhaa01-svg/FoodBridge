@@ -1,4 +1,7 @@
 <div class="auth-container">
+  <div class="auth-brand">
+    <h1>FoodBridge</h1>
+  </div>
   <mat-card class="auth-card">
     <mat-card-header>
       <mat-card-title class="auth-title">Login</mat-card-title>
@@ -19,7 +22,6 @@
             <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
           <mat-error *ngIf="password?.hasError('required')">Password is required</mat-error>
-          <mat-error *ngIf="password?.hasError('minlength')">Password must be at least 8 characters</mat-error>
         </mat-form-field>
 
         <button mat-raised-button color="primary" type="submit" class="submit-button" [disabled]="loginForm.invalid || isSubmitting()">

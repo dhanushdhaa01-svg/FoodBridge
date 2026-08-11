@@ -22,5 +22,5 @@ export const RootGuard: CanActivateFn = (route, state) => {
     return router.createUrlTree([APP_ROUTES.AWAITING_APPROVAL]);
   }
 
-  return router.createUrlTree([APP_ROUTES.DASHBOARD]);
+  return true;
 };

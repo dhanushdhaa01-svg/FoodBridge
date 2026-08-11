@@ -24,7 +24,13 @@ const ROUTE_SEGMENTS = {
 export const routes: Routes = [
   {
     path: '',
-    canActivate: [RootGuard]
+    component: MainLayoutComponent,
+    canActivate: [RootGuard],
+    children: [
+      { path: '', component: DashboardComponent },
+      { path: ROUTE_SEGMENTS.DASHBOARD, component: DashboardComponent },
+      { path: ROUTE_SEGMENTS.UNAUTHORIZED, component: UnauthorizedComponent }
+    ]
   },
   {
     path: ROUTE_SEGMENTS.LOGIN,
@@ -40,19 +46,6 @@ export const routes: Routes = [
     path: ROUTE_SEGMENTS.AWAITING_APPROVAL,
     canActivate: [AwaitingApprovalGuard],
     component: AwaitingApprovalComponent
-  },
-  {
-    path: ROUTE_SEGMENTS.DASHBOARD,
-    component: MainLayoutComponent,
-    canActivate: [AuthGuard],
-    children: [
-      { path: '', component: DashboardComponent }
-    ]
-  },
-  {
-    path: ROUTE_SEGMENTS.UNAUTHORIZED,
-    canActivate: [AuthGuard],
-    component: UnauthorizedComponent
   },
   {
     path: '**',
