@@ -1,0 +1,229 @@
+<div class="donation-detail-container">
+  @if (isLoading()) {
+    <div class="loading-state">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Loading donation details...</p>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="error-state">
+      <div class="error-icon-box">
+        <mat-icon>error_outline</mat-icon>
+      </div>
+      <h3>Notice</h3>
+      <p>{{ errorMessage() }}</p>
+      <a mat-flat-button color="primary" [routerLink]="appRoutes.DASHBOARD">Back to Dashboard</a>
+    </div>
+  } @else if (donation(); as item) {
+    <div class="detail-wrapper">
+      <!-- Breadcrumb & Back Row -->
+      <div class="nav-bar-row">
+        <a mat-button [routerLink]="currentUserRole() === 'donor' ? appRoutes.DONATIONS_MY : appRoutes.DONATIONS" class="back-link">
+          <mat-icon>arrow_back</mat-icon>
+          <span>{{ currentUserRole() === 'donor' ? 'Back to My Donations' : 'Back to Available Food' }}</span>
+        </a>
+      </div>
+
+      <!-- Hero Header Banner -->
+      <div class="detail-hero-banner" [class]="'hero-bg-' + item.foodType">
+        <div class="hero-left">
+          <div class="hero-food-icon">
+            <mat-icon>{{ item.foodType === 'veg' ? 'eco' : item.foodType === 'non-veg' ? 'restaurant' : 'set_meal' }}</mat-icon>
+          </div>
+          <div class="hero-title-group">
+            <div class="hero-badges">
+              <span class="food-type-chip" [class]="'food-type-' + item.foodType">
+                {{ item.foodType }}
+              </span>
+              <span class="status-badge" [class]="'status-' + item.status">
+                {{ item.status }}
+              </span>
+            </div>
+            <h1 class="hero-food-name">{{ item.foodName }}</h1>
+            <p class="hero-location">
+              <mat-icon>location_on</mat-icon>
+              <span>{{ item.city }}, {{ item.state }}</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <div class="hero-stat-box">
+            <span class="stat-num">{{ item.quantity }}</span>
+            <span class="stat-lbl">{{ item.quantityUnit | uppercase }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2-Column Content Grid -->
+      <div class="detail-grid-layout">
+        <!-- Left Column: Information Cards -->
+        <div class="left-col">
+          <!-- Food Description -->
+          <div class="detail-card">
+            <div class="card-title-row">
+              <mat-icon class="sec-icon">restaurant_menu</mat-icon>
+              <h3>Food & Preparation Details</h3>
+            </div>
+            <p class="food-description">{{ item.description || 'No additional description provided.' }}</p>
+
+            @if (item.specialInstructions) {
+              <div class="instructions-box">
+                <mat-icon>info</mat-icon>
+                <div>
+                  <strong>Special Instructions:</strong>
+                  <p>{{ item.specialInstructions }}</p>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Timing & Schedule -->
+          <div class="detail-card">
+            <div class="card-title-row">
+              <mat-icon class="sec-icon">schedule</mat-icon>
+              <h3>Pickup & Expiry Schedule</h3>
+            </div>
+
+            <div class="schedule-grid">
+              <div class="schedule-item">
+                <span class="sch-label">Pickup Date</span>
+                <span class="sch-val">{{ formatDate(item.pickupDate) }}</span>
+              </div>
+              <div class="schedule-item">
+                <span class="sch-label">Pickup Window</span>
+                <span class="sch-val">{{ formatTime(item.pickupStartTime) }} - {{ formatTime(item.pickupEndTime) }}</span>
+              </div>
+              <div class="schedule-item">
+                <span class="sch-label">Prepared At</span>
+                <span class="sch-val">{{ formatDate(item.preparedAt) }}</span>
+              </div>
+              <div class="schedule-item expiry-item">
+                <span class="sch-label">Expires At</span>
+                <span class="sch-val">{{ formatDate(item.expiryAt) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Location Details -->
+          <div class="detail-card">
+            <div class="card-title-row">
+              <mat-icon class="sec-icon">pin_drop</mat-icon>
+              <h3>Pickup Location</h3>
+            </div>
+
+            <div class="address-box">
+              <div class="address-line">{{ item.address }}</div>
+              <div class="address-city">{{ item.city }}, {{ item.state }} - {{ item.pincode }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Operations & Actions -->
+        <div class="right-col">
+          <!-- Action Card -->
+          <div class="action-card">
+            <h3 class="action-card-title">Manage Donation</h3>
+
+            <div class="status-summary-box" [class]="'box-' + item.status">
+              <mat-icon>{{ item.status === 'available' ? 'check_circle' : item.status === 'claimed' ? 'local_shipping' : item.status === 'completed' ? 'verified' : 'cancel' }}</mat-icon>
+              <div class="summary-text">
+                <span class="sum-status">{{ item.status | uppercase }}</span>
+                <span class="sum-hint">
+                  {{ item.status === 'available' ? 'Ready for an NGO to claim & rescue' : item.status === 'claimed' ? 'Claimed and awaiting pickup/distribution' : item.status === 'completed' ? 'Rescued and distributed successfully' : 'This donation is cancelled or expired' }}
+                </span>
+              </div>
+            </div>
+
+            @if (item.phone) {
+              <div class="contact-card">
+                <div class="contact-header">
+                  <mat-icon>call</mat-icon>
+                  <span>Direct Contact Phone</span>
+                </div>
+                <a [href]="'tel:' + item.phone" class="phone-link">{{ item.phone }}</a>
+              </div>
+            }
+
+            <div class="action-buttons-group">
+              <!-- NGO: Claim Donation -->
+              @if (currentUserRole() === 'ngo' && item.status === 'available') {
+                <button
+                  mat-flat-button
+                  color="primary"
+                  (click)="onClaimDonation()"
+                  [disabled]="isClaiming()"
+                  class="action-btn primary-action">
+                  @if (isClaiming()) {
+                    <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+                    <span>Claiming donation...</span>
+                  } @else {
+                    <ng-container>
+                      <mat-icon>handshake</mat-icon>
+                      <span>Claim This Donation</span>
+                    </ng-container>
+                  }
+                </button>
+              }
+
+              <!-- NGO: Complete Claim -->
+              @if (currentUserRole() === 'ngo' && item.status === 'claimed') {
+                <button
+                  mat-flat-button
+                  color="primary"
+                  (click)="onCompleteDonation()"
+                  [disabled]="isCompleting()"
+                  class="action-btn success-action">
+                  @if (isCompleting()) {
+                    <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+                    <span>Completing rescue...</span>
+                  } @else {
+                    <ng-container>
+                      <mat-icon>task_alt</mat-icon>
+                      <span>Mark Rescue Completed</span>
+                    </ng-container>
+                  }
+                </button>
+
+                <button
+                  mat-stroked-button
+                  (click)="onCancelClaim()"
+                  [disabled]="isCancellingClaim()"
+                  class="action-btn cancel-claim-btn">
+                  @if (isCancellingClaim()) {
+                    <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+                    <span>Cancelling claim...</span>
+                  } @else {
+                    <ng-container>
+                      <mat-icon>cancel</mat-icon>
+                      <span>Cancel Claim</span>
+                    </ng-container>
+                  }
+                </button>
+              }
+
+              <!-- Donor: Cancel Donation -->
+              @if (currentUserRole() === 'donor' && item.status === 'available') {
+                <button
+                  mat-stroked-button
+                  color="warn"
+                  (click)="onCancelDonation()"
+                  [disabled]="isCancelling()"
+                  class="action-btn danger-action">
+                  @if (isCancelling()) {
+                    <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+                    <span>Cancelling...</span>
+                  } @else {
+                    <ng-container>
+                      <mat-icon>delete_outline</mat-icon>
+                      <span>Cancel This Donation</span>
+                    </ng-container>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

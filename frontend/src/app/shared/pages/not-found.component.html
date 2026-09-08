@@ -1,13 +1,24 @@
 <div class="not-found-page">
-  <h1>404</h1>
-  <p>The page you are looking for does not exist.</p>
-  @if (isAuthenticated()) {
-    <button mat-raised-button color="primary" (click)="goToDashboard()">
-      Go to Dashboard
-    </button>
-  } @else {
-    <button mat-raised-button color="primary" (click)="goToLogin()">
-      Go to Login
-    </button>
-  }
+  <div class="not-found-card">
+    <div class="status-code">404</div>
+    <div class="icon-wrap">
+      <mat-icon>explore_off</mat-icon>
+    </div>
+    <h1>Destination Not Found</h1>
+    <p>The page or resource you requested does not exist or has been relocated to another path.</p>
+
+    <div class="actions-row">
+      @if (isAuthenticated()) {
+        <button mat-flat-button color="primary" class="return-btn" (click)="goToDashboard()">
+          <mat-icon>dashboard</mat-icon>
+          <span>Return to Dashboard</span>
+        </button>
+      } @else {
+        <button mat-flat-button color="primary" class="return-btn" (click)="goToLogin()">
+          <mat-icon>login</mat-icon>
+          <span>Return to Login</span>
+        </button>
+      }
+    </div>
+  </div>
 </div>

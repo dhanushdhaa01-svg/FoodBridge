@@ -1,0 +1,158 @@
+<div class="my-claims-page">
+  <!-- Header & Filter Row -->
+  <div class="page-header-row">
+    <div class="header-texts">
+      <div class="header-badge">
+        <mat-icon>handshake</mat-icon>
+        <span>NGO Claims Hub</span>
+      </div>
+      <h1>My Food Claims & Rescues</h1>
+      <p class="subtitle">Coordinate pickups, reach donors, and mark completed distributions</p>
+    </div>
+
+    <div class="filter-toggles">
+      <mat-button-toggle-group [value]="statusFilter()" (change)="onFilterChange($event.value)" aria-label="Claim Status" class="custom-toggle-group">
+        <mat-button-toggle value="all">All Claims</mat-button-toggle>
+        <mat-button-toggle value="claimed">Active Claims</mat-button-toggle>
+        <mat-button-toggle value="completed">Completed</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="error-banner" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ errorMessage() }}</span>
+      <button mat-button color="primary" (click)="loadClaims()">Retry</button>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="claims-grid">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="skeleton-card">
+          <div class="skeleton-box skeleton-header"></div>
+          <div class="skeleton-box skeleton-body"></div>
+        </div>
+      }
+    </div>
+  } @else if (claims().length === 0) {
+    <!-- Empty State -->
+    <div class="empty-claims-card">
+      <div class="empty-icon-wrap">
+        <mat-icon>handshake</mat-icon>
+      </div>
+      <h3>No {{ statusFilter() !== 'all' ? statusFilter() : '' }} claims found</h3>
+      <p>You have no food donations currently matching this status. Explore active food listings across your region!</p>
+      <a mat-flat-button color="primary" [routerLink]="appRoutes.DONATIONS" class="browse-cta">
+        <mat-icon>search</mat-icon>
+        <span>Browse Available Food</span>
+      </a>
+    </div>
+  } @else {
+    <!-- Claims Grid -->
+    <div class="claims-grid">
+      @for (item of claims(); track item.id) {
+        <div class="claim-card" [class.is-completed]="item.status === 'completed'">
+          <!-- Top Status Bar -->
+          <div class="claim-status-bar" [class]="'bar-' + item.status">
+            <span class="status-label">
+              <mat-icon>{{ item.status === 'completed' ? 'verified' : 'local_shipping' }}</mat-icon>
+              {{ item.status === 'completed' ? 'Rescue Completed' : 'Active Claim — Pending Pickup' }}
+            </span>
+            <span class="food-type-chip" [class]="'food-type-' + item.foodType">
+              {{ item.foodType }}
+            </span>
+          </div>
+
+          <div class="claim-body">
+            <div class="food-heading-row">
+              <h3 class="food-name">{{ item.foodName }}</h3>
+              <div class="qty-pill">
+                <span class="qty-val">{{ item.quantity }}</span>
+                <span class="qty-unit">{{ item.quantityUnit }}</span>
+              </div>
+            </div>
+
+            <!-- Donor Contact & Location Box -->
+            <div class="contact-box">
+              @if (item.phone) {
+                <div class="contact-row">
+                  <mat-icon class="c-icon">call</mat-icon>
+                  <div class="c-text">
+                    <span class="c-label">Donor Phone:</span>
+                    <a [href]="'tel:' + item.phone" class="phone-link">{{ item.phone }}</a>
+                  </div>
+                </div>
+              }
+
+              <div class="contact-row">
+                <mat-icon class="c-icon">location_on</mat-icon>
+                <div class="c-text">
+                  <span class="c-label">Pickup Address:</span>
+                  <span class="c-val">{{ item.address }}, {{ item.city }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Timestamps -->
+            <div class="timing-list">
+              <div class="time-item">
+                <mat-icon>event</mat-icon>
+                <span>Scheduled Pickup: <strong>{{ formatDate(item.pickupDate) }}</strong></span>
+              </div>
+              @if (item.claimedAt) {
+                <div class="time-item">
+                  <mat-icon>schedule</mat-icon>
+                  <span>Claimed on {{ formatDate(item.claimedAt) }}</span>
+                </div>
+              }
+              @if (item.completedAt) {
+                <div class="time-item completed-timestamp">
+                  <mat-icon>check_circle</mat-icon>
+                  <span>Completed on {{ formatDate(item.completedAt) }}</span>
+                </div>
+              }
+            </div>
+
+            <!-- Card Actions -->
+            <div class="claim-actions">
+              <a mat-stroked-button [routerLink]="['/donations', item.id]" class="detail-link-btn">
+                <span>Details</span>
+              </a>
+
+              @if (item.status === 'claimed') {
+                <button
+                  mat-flat-button
+                  color="primary"
+                  [disabled]="actionInProgressId() === item.id"
+                  (click)="onComplete(item)"
+                  class="complete-btn">
+                  @if (actionInProgressId() === item.id) {
+                    <mat-spinner diameter="16" class="btn-spinner"></mat-spinner>
+                  } @else {
+                    <ng-container>
+                      <mat-icon>task_alt</mat-icon>
+                      <span>Complete</span>
+                    </ng-container>
+                  }
+                </button>
+
+                <button
+                  mat-stroked-button
+                  color="warn"
+                  [disabled]="actionInProgressId() === item.id"
+                  (click)="onCancelClaim(item)"
+                  class="cancel-btn">
+                  <mat-icon>cancel</mat-icon>
+                  <span>Cancel</span>
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

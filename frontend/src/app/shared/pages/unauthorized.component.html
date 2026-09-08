@@ -1,8 +1,16 @@
 <div class="unauthorized-page">
-  <mat-icon class="unauthorized-icon">lock</mat-icon>
-  <h1>Unauthorized</h1>
-  <p>You do not have permission to access this page.</p>
-  <button mat-raised-button color="primary" (click)="goBack()">
-    Return to Dashboard
-  </button>
+  <div class="unauthorized-card">
+    <div class="icon-wrap">
+      <mat-icon>lock</mat-icon>
+    </div>
+    <h1>Access Restricted</h1>
+    <p>You do not have the necessary security credentials or administrative privileges to view this section.</p>
+
+    <div class="actions-row">
+      <button mat-flat-button color="primary" class="return-btn" (click)="goBack()">
+        <mat-icon>dashboard</mat-icon>
+        <span>Return to Dashboard</span>
+      </button>
+    </div>
+  </div>
 </div>

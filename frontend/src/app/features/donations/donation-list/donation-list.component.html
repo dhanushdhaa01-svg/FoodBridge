@@ -1,0 +1,166 @@
+<div class="donation-list-container">
+  <div class="page-header">
+    <div class="header-badge">
+      <mat-icon>storefront</mat-icon>
+      <span>Food Rescue Marketplace</span>
+    </div>
+    <h1>Available Food</h1>
+    <p class="subtitle">Rescue surplus food before it goes to waste.</p>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="error-banner" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ errorMessage() }}</span>
+      <button mat-button color="primary" (click)="loadDonations()">Retry</button>
+    </div>
+  }
+
+  <!-- Modern Filter Panel -->
+  <div class="filters-card">
+    <div class="filters-grid">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Search City</mat-label>
+        <mat-icon matPrefix class="filter-input-icon">location_on</mat-icon>
+        <input matInput [value]="cityFilter()" (input)="cityFilter.set($any($event.target).value)" (keyup.enter)="onApplyFilters()" placeholder="e.g. Mangalore">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Food Type</mat-label>
+        <mat-icon matPrefix class="filter-input-icon">restaurant</mat-icon>
+        <mat-select [value]="foodTypeFilter()" (selectionChange)="foodTypeFilter.set($event.value); onApplyFilters()">
+          <mat-option [value]="null">Any Type</mat-option>
+          @for (option of foodTypeOptions; track option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Quantity Unit</mat-label>
+        <mat-icon matPrefix class="filter-input-icon">inventory_2</mat-icon>
+        <mat-select [value]="quantityUnitFilter()" (selectionChange)="quantityUnitFilter.set($event.value); onApplyFilters()">
+          <mat-option [value]="null">Any Unit</mat-option>
+          @for (option of quantityUnitOptions; track option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <div class="filter-actions">
+        <button mat-flat-button color="primary" (click)="onApplyFilters()" [disabled]="isLoading()" class="filter-apply-btn">
+          <mat-icon>search</mat-icon>
+          <span>Apply Filters</span>
+        </button>
+        <button mat-stroked-button (click)="onClearFilters()" [disabled]="isLoading()" class="filter-clear-btn">
+          <mat-icon>clear</mat-icon>
+          <span>Clear</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State (Skeleton Cards) -->
+  @if (isLoading()) {
+    <div class="donations-grid">
+      @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+        <div class="skeleton-card">
+          <div class="skeleton-box skeleton-header"></div>
+          <div class="skeleton-body">
+            <div class="skeleton-box skeleton-line-lg"></div>
+            <div class="skeleton-box skeleton-line-md"></div>
+            <div class="skeleton-box skeleton-line-sm"></div>
+            <div class="skeleton-box skeleton-btn"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else if (donations().length === 0) {
+    <!-- Empty State -->
+    <div class="empty-state-wrap">
+      <div class="empty-icon-circle">
+        <mat-icon>restaurant</mat-icon>
+      </div>
+      <h3>No donations available</h3>
+      <p>New food donations from donors will appear here. Try clearing or broadening your search filters.</p>
+      <button mat-stroked-button color="primary" (click)="onClearFilters()">
+        <mat-icon>refresh</mat-icon>
+        <span>Reset Filters</span>
+      </button>
+    </div>
+  } @else {
+    <!-- Donation Cards Grid -->
+    <div class="donations-grid">
+      @for (donation of donations(); track donation.id) {
+        <div class="donation-card">
+          <!-- Food Visual Header (CSS Pattern Treatment) -->
+          <div class="card-visual-strip" [class]="'type-bg-' + donation.foodType">
+            <div class="type-badge-row">
+              <span class="food-type-chip" [class]="'food-type-' + donation.foodType">
+                {{ donation.foodType }}
+              </span>
+              <span class="status-badge" [class]="'status-' + donation.status">
+                {{ donation.status }}
+              </span>
+            </div>
+            <div class="visual-food-icon">
+              <mat-icon>{{ donation.foodType === 'veg' ? 'eco' : donation.foodType === 'non-veg' ? 'restaurant' : 'set_meal' }}</mat-icon>
+            </div>
+          </div>
+
+          <div class="card-content">
+            <div class="food-title-row">
+              <h3 class="food-name" [title]="donation.foodName">{{ donation.foodName }}</h3>
+              <div class="quantity-highlight">
+                <span class="qty-num">{{ donation.quantity }}</span>
+                <span class="qty-unit">{{ donation.quantityUnit }}</span>
+              </div>
+            </div>
+
+            <div class="meta-list">
+              <div class="meta-row">
+                <mat-icon class="meta-icon">location_on</mat-icon>
+                <span class="meta-text">{{ donation.city }}, {{ donation.state }}</span>
+              </div>
+
+              <div class="meta-row">
+                <mat-icon class="meta-icon">schedule</mat-icon>
+                <span class="meta-text">Pickup: {{ formatDate(donation.pickupDate) }} ({{ formatTime(donation.pickupStartTime) }} - {{ formatTime(donation.pickupEndTime) }})</span>
+              </div>
+
+              <div class="meta-row expires-row">
+                <mat-icon class="meta-icon">hourglass_empty</mat-icon>
+                <span class="meta-text">Expires: {{ formatDate(donation.expiryAt) }}</span>
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <a mat-flat-button color="primary" [routerLink]="['/donations', donation.id]" class="claim-btn">
+                <mat-icon>handshake</mat-icon>
+                <span>Claim Donation</span>
+              </a>
+              <a mat-stroked-button [routerLink]="['/donations', donation.id]" class="details-btn">
+                <span>View Details</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages() > 1) {
+      <div class="pagination-bar">
+        <button mat-icon-button (click)="onPageChange(page() - 1)" [disabled]="page() === 1" [attr.aria-label]="'Previous page'">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+
+        <span class="page-indicator">Page {{ page() }} of {{ totalPages() }} ({{ total() }} available)</span>
+
+        <button mat-icon-button (click)="onPageChange(page() + 1)" [disabled]="page() === totalPages()" [attr.aria-label]="'Next page'">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    }
+  }
+</div>

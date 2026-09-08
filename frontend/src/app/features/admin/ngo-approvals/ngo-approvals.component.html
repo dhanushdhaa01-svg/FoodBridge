@@ -1,0 +1,110 @@
+<div class="ngo-approvals-container">
+  <header class="approvals-header">
+    <div class="header-badge">
+      <mat-icon>admin_panel_settings</mat-icon>
+      <span>Admin Security & Verification</span>
+    </div>
+    <h1>Pending NGO Approvals</h1>
+    <p class="approvals-subtitle">
+      Verify registered non-profit organizations before granting access to claim and collect food donations.
+    </p>
+  </header>
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Fetching pending NGO applications...</p>
+    </div>
+  } @else if (errorMessage(); as error) {
+    <div class="error-state">
+      <mat-icon class="error-icon">error_outline</mat-icon>
+      <p class="error-text">{{ error }}</p>
+      <button mat-flat-button color="primary" (click)="loadPendingNgos()" type="button">
+        <mat-icon>refresh</mat-icon>
+        <span>Retry</span>
+      </button>
+    </div>
+  } @else if (pendingNgos().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon-wrap">
+        <mat-icon>verified</mat-icon>
+      </div>
+      <h2>All Caught Up!</h2>
+      <p>There are currently no pending NGO registrations requiring administrative approval.</p>
+    </div>
+  } @else {
+    <div class="ngos-list">
+      @for (ngo of pendingNgos(); track ngo.id) {
+        <div class="ngo-card">
+          <div class="card-left-col">
+            <div class="ngo-avatar">
+              {{ (ngo.organizationName || ngo.fullName).slice(0, 2).toUpperCase() }}
+            </div>
+
+            <div class="ngo-main-info">
+              <div class="title-status-row">
+                <h2 class="ngo-title">{{ ngo.organizationName || ngo.fullName }}</h2>
+                <span class="pending-tag">
+                  <mat-icon>hourglass_top</mat-icon>
+                  Pending Review
+                </span>
+              </div>
+
+              @if (ngo.organizationName && ngo.organizationName !== ngo.fullName) {
+                <div class="representative-text">
+                  <mat-icon>person</mat-icon>
+                  <span>Representative: <strong>{{ ngo.fullName }}</strong></span>
+                </div>
+              }
+
+              <div class="details-grid">
+                <div class="detail-item">
+                  <mat-icon>email</mat-icon>
+                  <a [href]="'mailto:' + ngo.email" class="detail-link">{{ ngo.email }}</a>
+                </div>
+
+                @if (ngo.phone) {
+                  <div class="detail-item">
+                    <mat-icon>call</mat-icon>
+                    <a [href]="'tel:' + ngo.phone" class="detail-link">{{ ngo.phone }}</a>
+                  </div>
+                }
+
+                <div class="detail-item">
+                  <mat-icon>location_on</mat-icon>
+                  <span>{{ getLocationText(ngo) }}</span>
+                </div>
+
+                <div class="detail-item">
+                  <mat-icon>calendar_today</mat-icon>
+                  <span>Registered on {{ formatDate(ngo.createdAt) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-action-col">
+            <button
+              mat-flat-button
+              color="primary"
+              class="approve-action-btn"
+              (click)="approveNgo(ngo)"
+              [disabled]="isApproving(ngo.id)"
+              type="button"
+              [attr.aria-label]="'Approve ' + ngo.fullName">
+              @if (isApproving(ngo.id)) {
+                <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+                <span>Approving...</span>
+              } @else {
+                <ng-container>
+                  <mat-icon>check_circle</mat-icon>
+                  <span>Approve NGO</span>
+                </ng-container>
+              }
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

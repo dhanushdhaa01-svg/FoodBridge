@@ -60,8 +60,8 @@ const registerUser = async (dto) => {
   // Hash password — never store plaintext
   const hashedPassword = await bcrypt.hash(password, config.bcrypt.saltRounds);
 
-  // Donors are auto-approved; NGOs await admin verification
-  const isApproved = role === 'donor';
+  // Donors and admins are auto-approved; NGOs await admin verification
+  const isApproved = role === 'donor' || role === 'admin';
 
   const user = await User.create({
     fullName,

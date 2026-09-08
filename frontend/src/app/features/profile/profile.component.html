@@ -1,0 +1,212 @@
+<div class="profile-page">
+  @if (isLoading()) {
+    <div class="loading-state">
+      <mat-spinner diameter="44"></mat-spinner>
+      <p>Retrieving profile credentials...</p>
+    </div>
+  } @else if (user(); as u) {
+    <div class="profile-card-wrapper">
+      <div class="profile-main-card">
+        <!-- Header Banner -->
+        <div class="profile-header-banner">
+          <div class="avatar-large">
+            {{ (u.organizationName || u.fullName).slice(0, 2).toUpperCase() }}
+          </div>
+
+          <div class="header-info">
+            <div class="name-badge-row">
+              <h1>{{ u.fullName }}</h1>
+              @if (u.organizationName && u.organizationName !== u.fullName) {
+                <span class="org-sub-badge">
+                  <mat-icon>business</mat-icon>
+                  {{ u.organizationName }}
+                </span>
+              }
+            </div>
+
+            <p class="user-email">
+              <mat-icon>email</mat-icon>
+              <span>{{ u.email }}</span>
+            </p>
+
+            <div class="badges-row">
+              <span class="role-badge role-{{ u.role }}">{{ u.role | uppercase }}</span>
+              @if (u.role === 'ngo') {
+                <span class="status-badge" [class.badge-approved]="u.isApproved" [class.badge-pending]="!u.isApproved">
+                  <mat-icon>{{ u.isApproved ? 'verified' : 'hourglass_top' }}</mat-icon>
+                  <span>{{ u.isApproved ? 'Verified Partner' : 'Pending Verification' }}</span>
+                </span>
+              }
+              <span class="status-badge badge-active">
+                <mat-icon>check_circle</mat-icon>
+                <span>Active Account</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="header-actions">
+            @if (!isEditing()) {
+              <button mat-flat-button class="edit-profile-btn" (click)="toggleEdit()">
+                <mat-icon>edit</mat-icon>
+                <span>Edit Profile</span>
+              </button>
+            }
+          </div>
+        </div>
+
+        @if (errorMessage()) {
+          <div class="error-banner" role="alert">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ errorMessage() }}</span>
+          </div>
+        }
+
+        <!-- View Mode -->
+        @if (!isEditing()) {
+          <div class="profile-details-grid">
+            <div class="detail-section">
+              <div class="section-title-wrap">
+                <mat-icon>badge</mat-icon>
+                <h3>Account & Identity</h3>
+              </div>
+              <div class="detail-item">
+                <span class="label">Full Name</span>
+                <span class="value">{{ u.fullName }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Email Address</span>
+                <span class="value monospace">{{ u.email }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Contact Phone</span>
+                <span class="value">{{ u.phone || '—' }}</span>
+              </div>
+              @if (u.role === 'ngo') {
+                <div class="detail-item">
+                  <span class="label">Organization Name</span>
+                  <span class="value">{{ u.organizationName || '—' }}</span>
+                </div>
+              }
+              <div class="detail-item">
+                <span class="label">Assigned Role</span>
+                <span class="value highlight-role">{{ u.role | uppercase }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Registered On</span>
+                <span class="value">{{ formatDate(u.createdAt) }}</span>
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <div class="section-title-wrap">
+                <mat-icon>place</mat-icon>
+                <h3>Location & Logistics</h3>
+              </div>
+              <div class="detail-item">
+                <span class="label">Physical Address</span>
+                <span class="value">{{ u.address || '—' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">City / Region</span>
+                <span class="value">{{ u.city || '—' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">State</span>
+                <span class="value">{{ u.state || '—' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Postal Pincode</span>
+                <span class="value">{{ u.pincode || '—' }}</span>
+              </div>
+            </div>
+          </div>
+        } @else {
+          <!-- Edit Mode Form -->
+          <form [formGroup]="profileForm" (ngSubmit)="onSave()" class="profile-edit-form">
+            <div class="form-intro">
+              <h2>Update Account Details</h2>
+              <p class="edit-note">Update contact information and operational logistics. Primary email and assigned role are protected security credentials.</p>
+            </div>
+
+            <div class="form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Full Name</mat-label>
+                <input matInput formControlName="fullName" placeholder="Enter your full name" />
+                @if (profileForm.get('fullName')?.hasError('required')) {
+                  <mat-error>Full name is required</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Phone Number</mat-label>
+                <input matInput formControlName="phone" placeholder="10-digit Indian mobile number" />
+                @if (profileForm.get('phone')?.hasError('pattern')) {
+                  <mat-error>Enter valid 10-digit number</mat-error>
+                }
+              </mat-form-field>
+
+              @if (u.role === 'ngo') {
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Organization Name</mat-label>
+                  <input matInput formControlName="organizationName" placeholder="Registered organization name" />
+                  @if (profileForm.get('organizationName')?.hasError('required')) {
+                    <mat-error>Organization name is required</mat-error>
+                  }
+                </mat-form-field>
+              }
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Street Address</mat-label>
+                <input matInput formControlName="address" placeholder="Address" />
+                @if (profileForm.get('address')?.hasError('required')) {
+                  <mat-error>Address is required</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>City</mat-label>
+                <input matInput formControlName="city" placeholder="City" />
+                @if (profileForm.get('city')?.hasError('required')) {
+                  <mat-error>City is required</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>State</mat-label>
+                <input matInput formControlName="state" placeholder="State" />
+                @if (profileForm.get('state')?.hasError('required')) {
+                  <mat-error>State is required</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Pincode</mat-label>
+                <input matInput formControlName="pincode" placeholder="6-digit pincode" />
+                @if (profileForm.get('pincode')?.hasError('pattern')) {
+                  <mat-error>Enter valid 6-digit pincode</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <div class="form-actions">
+              <button mat-stroked-button type="button" (click)="toggleEdit()" [disabled]="isSaving()" class="cancel-btn">
+                Cancel
+              </button>
+              <button mat-flat-button color="primary" type="submit" [disabled]="isSaving() || profileForm.invalid" class="save-btn">
+                @if (isSaving()) {
+                  <mat-spinner diameter="16" class="btn-spinner"></mat-spinner>
+                  <span>Saving Changes...</span>
+                } @else {
+                  <ng-container>
+                    <mat-icon>save</mat-icon>
+                    <span>Save Changes</span>
+                  </ng-container>
+                }
+              </button>
+            </div>
+          </form>
+        }
+      </div>
+    </div>
+  }
+</div>

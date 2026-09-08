@@ -1,31 +1,108 @@
-.quick-actions {
+.quick-actions-container {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
-.quick-actions h2 {
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-icon {
+  color: var(--clr-primary);
   font-size: 20px;
-  font-weight: 500;
+  width: 20px;
+  height: 20px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--clr-text);
   margin: 0;
+  letter-spacing: -0.01em;
 }
 
 .actions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
 }
 
-.actions-grid button {
+.action-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background-color: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: var(--clr-text);
+  cursor: pointer;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-fast);
+
+  &:hover {
+    border-color: var(--clr-primary-tint);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+
+    .action-icon-wrap {
+      background-color: var(--clr-primary);
+      color: #ffffff;
+    }
+
+    .action-arrow {
+      transform: translateX(3px);
+      color: var(--clr-primary);
+    }
+  }
+}
+
+.action-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  background-color: var(--clr-primary-light);
+  color: var(--clr-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  height: 48px;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+
+  .mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
 }
 
-@media (max-width: 480px) {
-  .actions-grid {
-    grid-template-columns: 1fr;
-  }
+.action-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.action-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--clr-text);
+}
+
+.action-hint {
+  font-size: 12px;
+  color: var(--clr-text-muted);
+  margin-top: 2px;
+}
+
+.action-arrow {
+  color: var(--clr-text-faint);
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  transition: transform var(--transition-fast), color var(--transition-fast);
 }

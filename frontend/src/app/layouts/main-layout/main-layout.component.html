@@ -5,55 +5,122 @@
     [opened]="sidenavOpened()"
     class="sidenav"
     [attr.aria-label]="'Navigation menu'">
-    
+
+    <!-- Brand Header -->
     <div class="sidenav-header">
-      <span class="sidenav-logo">FoodBridge</span>
+      <div class="brand-wrap">
+        <div class="brand-icon">
+          <mat-icon>volunteer_activism</mat-icon>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">FoodBridge</span>
+          <span class="brand-tagline">Food Redistribution</span>
+        </div>
+      </div>
     </div>
 
-    <mat-nav-list class="sidenav-nav">
+    <!-- Navigation List -->
+    <nav class="sidenav-nav" aria-label="Main navigation">
+      <div class="nav-section-title">Navigation</div>
       @for (item of visibleNavItems(); track item.route) {
         <a
-          mat-list-item
+          class="nav-item"
           [routerLink]="item.route"
           routerLinkActive="active"
+          (click)="isMobile() ? toggleSidenav() : null"
           [attr.aria-label]="item.label">
-          <mat-icon matListIcon>{{ item.icon }}</mat-icon>
-          <span>{{ item.label }}</span>
+          <div class="nav-icon-wrap">
+            <mat-icon>{{ item.icon }}</mat-icon>
+          </div>
+          <span class="nav-label">{{ item.label }}</span>
         </a>
       }
-    </mat-nav-list>
+    </nav>
+
+    <!-- Bottom User Strip -->
+    @if (user(); as currentUser) {
+      <div class="sidenav-footer">
+        <div class="user-strip">
+          <div class="user-avatar-sm">{{ currentUser.fullName.charAt(0).toUpperCase() }}</div>
+          <div class="user-details">
+            <span class="user-name-text">{{ currentUser.fullName }}</span>
+            <span class="user-role-pill role-{{ currentUser.role }}">{{ currentUser.role }}</span>
+          </div>
+          <button mat-icon-button (click)="onLogout()" title="Logout" type="button" class="logout-mini-btn">
+            <mat-icon>logout</mat-icon>
+          </button>
+        </div>
+      </div>
+    }
   </mat-sidenav>
 
   <mat-sidenav-content class="sidenav-content">
-    <mat-toolbar color="primary" class="toolbar">
-      <button
-        mat-icon-button
-        (click)="toggleSidenav()"
-        *ngIf="isMobile()"
-        type="button"
-        [attr.aria-label]="'Toggle navigation menu'">
-        <mat-icon>menu</mat-icon>
-      </button>
-      <span class="toolbar-title">FoodBridge</span>
+    <!-- Top Modern Toolbar -->
+    <mat-toolbar class="toolbar">
+      <div class="toolbar-left">
+        @if (isMobile()) {
+          <button
+            mat-icon-button
+            (click)="toggleSidenav()"
+            type="button"
+            class="mobile-menu-btn"
+            [attr.aria-label]="'Toggle navigation menu'">
+            <mat-icon>menu</mat-icon>
+          </button>
+        }
+        @if (isMobile()) {
+          <div class="brand-mobile-title">
+            <span>FoodBridge</span>
+          </div>
+        }
+      </div>
+
       <span class="toolbar-spacer"></span>
-      @if (user(); as currentUser) {
-        <span class="user-info">{{ currentUser.fullName }} ({{ currentUser.role }})</span>
-      }
-      <button
-        mat-icon-button
-        [matMenuTriggerFor]="profileMenu"
-        type="button"
-        [attr.aria-label]="'User menu'">
-        <mat-icon>account_circle</mat-icon>
-      </button>
-      <mat-menu #profileMenu="matMenu">
-        <button mat-menu-item (click)="onLogout()" type="button">
-          <mat-icon>logout</mat-icon>
-          <span>Logout</span>
+
+      <div class="toolbar-right">
+        @if (user(); as currentUser) {
+          <div class="user-badge-header" [routerLink]="appRoutes.PROFILE">
+            <div class="user-avatar-sm">{{ currentUser.fullName.charAt(0).toUpperCase() }}</div>
+            @if (!isMobile()) {
+              <div class="user-header-info">
+                <span class="user-header-name">{{ currentUser.fullName }}</span>
+                <span class="user-header-role">{{ currentUser.role | titlecase }}</span>
+              </div>
+            }
+          </div>
+        }
+
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="profileMenu"
+          type="button"
+          class="user-menu-trigger"
+          [attr.aria-label]="'User menu'">
+          <mat-icon>expand_more</mat-icon>
         </button>
-      </mat-menu>
+
+        <mat-menu #profileMenu="matMenu" xPosition="before" class="modern-profile-menu">
+          @if (user(); as currentUser) {
+            <div class="menu-user-header">
+              <div class="menu-user-name">{{ currentUser.fullName }}</div>
+              <div class="menu-user-email">{{ currentUser.email }}</div>
+            </div>
+          }
+          <mat-divider></mat-divider>
+          <a mat-menu-item [routerLink]="appRoutes.PROFILE">
+            <mat-icon>person_outline</mat-icon>
+            <span>My Profile</span>
+          </a>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="onLogout()" type="button" class="menu-logout-item">
+            <mat-icon color="warn">logout</mat-icon>
+            <span class="text-danger">Sign Out</span>
+          </button>
+        </mat-menu>
+      </div>
     </mat-toolbar>
 
+    <!-- Main Content Outlet -->
     <main class="main-content">
       <router-outlet></router-outlet>
     </main>

@@ -1,74 +1,295 @@
 <div class="dashboard-container">
+  <!-- Welcome Header -->
   <header class="dashboard-header">
-    <div>
+    <div class="header-text">
+      <div class="greeting">Hello 👋</div>
       <h1>Welcome back, {{ userName() }}</h1>
-      <p class="role-badge">{{ userRole() | titlecase }} Dashboard</p>
+      <span class="role-badge">
+        <mat-icon>{{ userRole() === 'donor' ? 'volunteer_activism' : userRole() === 'ngo' ? 'handshake' : 'admin_panel_settings' }}</mat-icon>
+        {{ userRole() | titlecase }} Dashboard
+      </span>
+    </div>
+
+    <div class="header-actions">
+      @if (userRole() === 'donor') {
+        <a mat-flat-button color="primary" [routerLink]="appRoutes.DONATION_CREATE" class="header-cta-btn">
+          <mat-icon>add_circle</mat-icon>
+          <span>Post Donation</span>
+        </a>
+      } @else if (userRole() === 'ngo') {
+        <a mat-flat-button color="primary" [routerLink]="appRoutes.DONATIONS" class="header-cta-btn">
+          <mat-icon>search</mat-icon>
+          <span>Browse Food</span>
+        </a>
+      }
     </div>
   </header>
 
   @if (user(); as currentUser) {
     <div class="dashboard-content">
+      <!-- Top Row: Profile Card & Quick Actions -->
       <app-profile-card [user]="currentUser" />
 
       <app-quick-actions [role]="currentUser.role" />
 
-      <div class="dashboard-sections">
+      <!-- Live Statistics Section -->
+      @if (isLoadingStats()) {
+        <div class="stats-loading">
+          <mat-spinner diameter="36"></mat-spinner>
+          <span>Loading live statistics...</span>
+        </div>
+      } @else if (dashboardData(); as data) {
+        <!-- Donor Dashboard -->
         @if (currentUser.role === 'donor') {
-          <section class="dashboard-section">
-            <h2>Donation Activity</h2>
-            <app-empty-state
-              title="No donations yet"
-              message="Donation activity will appear here once you create your first donation."
-              icon="volunteer_activism">
-            </app-empty-state>
+          <section class="stats-overview">
+            <h2 class="section-title">
+              <mat-icon>analytics</mat-icon> Impact Overview
+            </h2>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon icon-blue"><mat-icon>receipt_long</mat-icon></div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ data.stats.totalDonations ?? 0 }}</span>
+                  <span class="stat-label">Total Donations</span>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-icon icon-green"><mat-icon>inventory_2</mat-icon></div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ data.stats.availableDonations ?? 0 }}</span>
+                  <span class="stat-label">Available for Pickup</span>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-icon icon-amber"><mat-icon>local_shipping</mat-icon></div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ data.stats.claimedDonations ?? 0 }}</span>
+                  <span class="stat-label">Claimed by NGO</span>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-icon icon-emerald"><mat-icon>task_alt</mat-icon></div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ data.stats.completedDonations ?? 0 }}</span>
+                  <span class="stat-label">Completed Distributions</span>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-icon icon-purple"><mat-icon>set_meal</mat-icon></div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ data.stats.totalQuantityDonated ?? 0 }}</span>
+                  <span class="stat-label">Total Meals Shared</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Recent Donations List -->
+          <section class="activity-section">
+            <div class="section-header-row">
+              <h2 class="section-title">
+                <mat-icon>history</mat-icon> Recent Donation Activity
+              </h2>
+              <a mat-button color="primary" [routerLink]="appRoutes.DONATIONS_MY">
+                View All My Donations <mat-icon>arrow_forward</mat-icon>
+              </a>
+            </div>
+
+            @if (!data.recentDonations || data.recentDonations.length === 0) {
+              <app-empty-state
+                title="No donations yet"
+                message="You have not created any food donations. Share surplus food to help people in need!"
+                icon="volunteer_activism">
+              </app-empty-state>
+            } @else {
+              <div class="recent-list">
+                @for (item of data.recentDonations; track item.id) {
+                  <div class="activity-item">
+                    <div class="activity-icon">
+                      <mat-icon>restaurant</mat-icon>
+                    </div>
+                    <div class="activity-main">
+                      <span class="activity-title">{{ item.foodName }}</span>
+                      <span class="activity-subtitle">{{ item.quantity }} {{ item.quantityUnit }} &bull; {{ item.foodType | titlecase }}</span>
+                    </div>
+                    <div class="activity-status">
+                      <span class="status-badge status-{{ item.status }}">{{ item.status | uppercase }}</span>
+                    </div>
+                    <a mat-stroked-button [routerLink]="['/donations', item.id]">
+                      Details
+                    </a>
+                  </div>
+                }
+              </div>
+            }
           </section>
         }
 
+        <!-- NGO Dashboard -->
         @if (currentUser.role === 'ngo') {
-          <section class="dashboard-section">
-            <h2>Available Food Donations</h2>
-            <app-empty-state
-              title="No donations available"
-              message="Available food donations will appear here once donors create them."
-              icon="restaurant">
-            </app-empty-state>
+          <section class="stats-overview">
+            <h2 class="section-title">
+              <mat-icon>analytics</mat-icon> Rescue Operations Overview
+            </h2>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon icon-green"><mat-icon>storefront</mat-icon></div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ data.stats.availableDonations ?? 0 }}</span>
+                  <span class="stat-label">Available in Platform</span>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-icon icon-amber"><mat-icon>local_shipping</mat-icon></div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ data.stats.myActiveClaims ?? 0 }}</span>
+                  <span class="stat-label">My Active Claims</span>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-icon icon-emerald"><mat-icon>verified</mat-icon></div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ data.stats.myCompletedClaims ?? 0 }}</span>
+                  <span class="stat-label">Rescues Completed</span>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-icon icon-purple"><mat-icon>lunch_dining</mat-icon></div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ data.stats.totalQuantityRescued ?? 0 }}</span>
+                  <span class="stat-label">Total Meals Rescued</span>
+                </div>
+              </div>
+            </div>
           </section>
 
-          <section class="dashboard-section">
-            <h2>My Claims</h2>
-            <app-empty-state
-              title="No claims yet"
-              message="Claim activity will appear here once you start claiming donations."
-              icon="handshake">
-            </app-empty-state>
+          <!-- Recent Claims for NGO -->
+          <section class="activity-section">
+            <div class="section-header-row">
+              <h2 class="section-title">
+                <mat-icon>handshake</mat-icon> Recent Claim Activity
+              </h2>
+              <a mat-button color="primary" [routerLink]="appRoutes.DONATIONS_CLAIMS">
+                View All My Claims <mat-icon>arrow_forward</mat-icon>
+              </a>
+            </div>
+
+            @if (!data.recentClaims || data.recentClaims.length === 0) {
+              <app-empty-state
+                title="No claims yet"
+                message="You have not claimed any donations. Browse available food in your city to make a claim!"
+                icon="handshake">
+              </app-empty-state>
+            } @else {
+              <div class="recent-list">
+                @for (item of data.recentClaims; track item.id) {
+                  <div class="activity-item">
+                    <div class="activity-icon">
+                      <mat-icon>delivery_dining</mat-icon>
+                    </div>
+                    <div class="activity-main">
+                      <span class="activity-title">{{ item.foodName }}</span>
+                      <span class="activity-subtitle">{{ item.quantity }} {{ item.quantityUnit }} &bull; {{ item.city }}</span>
+                    </div>
+                    <div class="activity-status">
+                      <span class="status-badge status-{{ item.status }}">{{ item.status | uppercase }}</span>
+                    </div>
+                    <a mat-stroked-button [routerLink]="['/donations', item.id]">
+                      Details
+                    </a>
+                  </div>
+                }
+              </div>
+            }
           </section>
         }
 
+        <!-- Admin Dashboard -->
         @if (currentUser.role === 'admin') {
-          <section class="dashboard-section">
-            <h2>System Overview</h2>
-            <app-empty-state
-              title="System statistics coming soon"
-              message="Platform-wide statistics will appear here once the analytics module is available."
-              icon="admin_panel_settings">
-            </app-empty-state>
+          <section class="stats-overview">
+            <h2 class="section-title">
+              <mat-icon>dashboard_customize</mat-icon> Platform Overview
+            </h2>
+
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon icon-blue"><mat-icon>group</mat-icon></div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ data.stats.users?.total ?? 0 }}</span>
+                  <span class="stat-label">Total Users</span>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-icon icon-indigo"><mat-icon>volunteer_activism</mat-icon></div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ data.stats.users?.donors ?? 0 }}</span>
+                  <span class="stat-label">Registered Donors</span>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-icon icon-amber"><mat-icon>pending_actions</mat-icon></div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ data.stats.users?.pendingNgos ?? 0 }}</span>
+                  <span class="stat-label">Pending NGO Approvals</span>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-icon icon-green"><mat-icon>domain_verification</mat-icon></div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ data.stats.users?.approvedNgos ?? 0 }}</span>
+                  <span class="stat-label">Approved NGOs</span>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-icon icon-purple"><mat-icon>restaurant</mat-icon></div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ data.stats.donations?.total ?? 0 }}</span>
+                  <span class="stat-label">Total Donations</span>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-icon icon-emerald"><mat-icon>check_circle</mat-icon></div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ data.stats.donations?.completed ?? 0 }}</span>
+                  <span class="stat-label">Completed Rescues</span>
+                </div>
+              </div>
+            </div>
           </section>
 
-          <section class="dashboard-section">
-            <h2>Pending NGO Approvals</h2>
-            <app-empty-state
-              title="No pending approvals"
-              message="NGO registration requests will appear here for review."
-              icon="pending">
-            </app-empty-state>
-          </section>
+          <!-- Admin Pending Approvals & Activity -->
+          <div class="admin-sections-grid">
+            <section class="dashboard-section">
+              <div class="section-header-row">
+                <h2 class="section-title">
+                  <mat-icon>verified_user</mat-icon> Pending NGO Approvals
+                </h2>
+                <a mat-button color="primary" [routerLink]="appRoutes.ADMIN_NGO_APPROVALS">
+                  Open Approvals Page <mat-icon>arrow_forward</mat-icon>
+                </a>
+              </div>
+              <app-ngo-approvals></app-ngo-approvals>
+            </section>
+          </div>
         }
-      </div>
+      }
     </div>
   } @else {
     <div class="dashboard-loading">
       <mat-spinner diameter="48"></mat-spinner>
-      <p>Loading dashboard...</p>
+      <p>Loading your dashboard...</p>
     </div>
   }
 </div>

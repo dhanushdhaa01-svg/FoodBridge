@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RouterModule } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { AuthService } from '../../../core/services/auth.service';
@@ -23,6 +24,7 @@ import { AuthResponse } from '../../../core/models/auth-response.model';
     CommonModule,
     ReactiveFormsModule,
     RouterLink,
+    RouterModule,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,

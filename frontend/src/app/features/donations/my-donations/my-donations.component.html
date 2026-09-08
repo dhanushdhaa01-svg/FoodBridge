@@ -1,0 +1,117 @@
+<div class="my-donations-page">
+  <!-- Header -->
+  <div class="page-header-row">
+    <div class="title-group">
+      <div class="header-badge">
+        <mat-icon>volunteer_activism</mat-icon>
+        <span>Donor History</span>
+      </div>
+      <h1>My Food Donations</h1>
+      <p class="subtitle">Track your shared meals and distribution lifecycle</p>
+    </div>
+
+    <a mat-flat-button color="primary" [routerLink]="appRoutes.DONATION_CREATE" class="create-cta-btn">
+      <mat-icon>add_circle</mat-icon>
+      <span>Post New Donation</span>
+    </a>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="error-banner" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <!-- Filter Bar -->
+  <div class="filter-strip">
+    <mat-form-field appearance="outline" class="status-select">
+      <mat-label>Filter by Status</mat-label>
+      <mat-icon matPrefix class="filter-icon">filter_list</mat-icon>
+      <mat-select [value]="selectedStatus()" (selectionChange)="onStatusChange()">
+        @for (option of statusOptions; track option.value) {
+          <mat-option [value]="option.value">{{ option.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Loading Skeletons -->
+  @if (isLoading()) {
+    <div class="cards-list">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="skeleton-card">
+          <div class="skeleton-box skeleton-title"></div>
+          <div class="skeleton-box skeleton-meta"></div>
+        </div>
+      }
+    </div>
+  } @else if (donations().length === 0) {
+    <!-- Empty State -->
+    <div class="empty-state-card">
+      <div class="empty-icon-wrap">
+        <mat-icon>volunteer_activism</mat-icon>
+      </div>
+      <h3>No donations found</h3>
+      <p>You haven't posted any food donations matching this filter. Start sharing surplus food to support local communities!</p>
+      <a mat-flat-button color="primary" [routerLink]="appRoutes.DONATION_CREATE">
+        <mat-icon>add_circle</mat-icon>
+        <span>Post Your First Donation</span>
+      </a>
+    </div>
+  } @else {
+    <!-- Donations List -->
+    <div class="cards-list">
+      @for (donation of donations(); track donation.id) {
+        <div class="my-donation-card">
+          <div class="card-left">
+            <div class="card-food-icon" [class]="'icon-' + donation.foodType">
+              <mat-icon>{{ donation.foodType === 'veg' ? 'eco' : donation.foodType === 'non-veg' ? 'restaurant' : 'set_meal' }}</mat-icon>
+            </div>
+
+            <div class="card-main-info">
+              <div class="card-title-row">
+                <h3 class="food-name">{{ donation.foodName }}</h3>
+                <span class="status-badge" [class]="'status-' + donation.status">
+                  {{ donation.status }}
+                </span>
+                <span class="food-type-chip" [class]="'food-type-' + donation.foodType">
+                  {{ donation.foodType }}
+                </span>
+              </div>
+
+              <div class="card-meta-row">
+                <span class="meta-val highlight-val">{{ donation.quantity }} {{ donation.quantityUnit }}</span>
+                <span class="meta-bullet">&bull;</span>
+                <span class="meta-val"><mat-icon>location_on</mat-icon>{{ donation.city }}</span>
+                <span class="meta-bullet">&bull;</span>
+                <span class="meta-val"><mat-icon>calendar_today</mat-icon>Pickup: {{ formatDate(donation.pickupDate) }}</span>
+                <span class="meta-bullet">&bull;</span>
+                <span class="meta-val"><mat-icon>access_time</mat-icon>Expires: {{ formatDate(donation.expiryAt) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-right">
+            <a mat-stroked-button color="primary" [routerLink]="['/donations', donation.id]" class="view-btn">
+              <span>View Details</span>
+              <mat-icon>chevron_right</mat-icon>
+            </a>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="pagination-row">
+        <button mat-icon-button (click)="onPageChange(page() - 1)" [disabled]="page() === 1" [attr.aria-label]="'Previous page'">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <span class="pagination-info">Page {{ page() }} of {{ totalPages() }}</span>
+        <button mat-icon-button (click)="onPageChange(page() + 1)" [disabled]="page() === totalPages()" [attr.aria-label]="'Next page'">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    }
+  }
+</div>

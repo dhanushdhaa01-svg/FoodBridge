@@ -61,7 +61,15 @@ export class MainLayoutComponent {
   readonly user = this.authService.currentUser;
 
   private readonly navItems: NavItem[] = [
-    { label: 'Dashboard', route: APP_ROUTES.DASHBOARD, icon: 'dashboard', roles: ['donor', 'ngo', 'admin'] }
+    { label: 'Dashboard', route: APP_ROUTES.DASHBOARD, icon: 'dashboard', roles: ['donor', 'ngo', 'admin'] },
+    { label: 'Create Donation', route: APP_ROUTES.DONATION_CREATE, icon: 'add_circle', roles: ['donor'] },
+    { label: 'My Donations', route: APP_ROUTES.DONATIONS_MY, icon: 'volunteer_activism', roles: ['donor'] },
+    { label: 'Browse Food', route: APP_ROUTES.DONATIONS, icon: 'search', roles: ['ngo'] },
+    { label: 'My Claims', route: APP_ROUTES.DONATIONS_CLAIMS, icon: 'handshake', roles: ['ngo'] },
+    { label: 'NGO Approvals', route: APP_ROUTES.ADMIN_NGO_APPROVALS, icon: 'verified_user', roles: ['admin'] },
+    { label: 'Platform Users', route: APP_ROUTES.ADMIN_USERS, icon: 'group', roles: ['admin'] },
+    { label: 'All Donations', route: APP_ROUTES.ADMIN_DONATIONS, icon: 'list_alt', roles: ['admin'] },
+    { label: 'My Profile', route: APP_ROUTES.PROFILE, icon: 'person', roles: ['donor', 'ngo', 'admin'] }
   ];
 
   readonly visibleNavItems = computed(() => {

@@ -1,22 +1,98 @@
-<div class="auth-container">
-  <mat-card class="auth-card awaiting-card">
-    <mat-card-content class="awaiting-content">
-      <div class="logo-placeholder">
-        <mat-icon class="logo-icon">hourglass_empty</mat-icon>
+<div class="awaiting-page">
+  <div class="awaiting-container">
+    <!-- Brand Header -->
+    <div class="brand-header">
+      <div class="brand-logo">
+        <mat-icon>volunteer_activism</mat-icon>
       </div>
-      <h2 class="awaiting-title">Awaiting Approval</h2>
-      <p class="awaiting-message">Your account is awaiting administrator approval.</p>
-      <p class="awaiting-subtext">We will notify you once your account has been reviewed. This usually takes 1-2 business days.</p>
-      <div class="awaiting-actions">
-        <button mat-stroked-button color="warn" (click)="onLogout()">
+      <span class="brand-title">FoodBridge</span>
+    </div>
+
+    <div class="awaiting-card">
+      <div class="status-badge-wrap">
+        <span class="status-badge status-pending">
+          <mat-icon class="badge-icon">pending</mat-icon>
+          Verification In Progress
+        </span>
+      </div>
+
+      <h1 class="card-heading">Your NGO Application is Under Review</h1>
+      <p class="card-subheading">
+        Thank you for joining FoodBridge. Our administration team is reviewing your organization's registration details to ensure trusted food safety standards.
+      </p>
+
+      <!-- 3-Step Journey Timeline -->
+      <div class="timeline-container">
+        <div class="timeline-step step-completed">
+          <div class="step-marker">
+            <mat-icon>check</mat-icon>
+          </div>
+          <div class="step-content">
+            <span class="step-title">Application Submitted</span>
+            <span class="step-desc">Registration details received</span>
+          </div>
+        </div>
+
+        <div class="timeline-line active-line"></div>
+
+        <div class="timeline-step step-active">
+          <div class="step-marker">
+            <div class="pulse-dot"></div>
+          </div>
+          <div class="step-content">
+            <span class="step-title">Admin Review</span>
+            <span class="step-desc">Document & organization verification</span>
+          </div>
+        </div>
+
+        <div class="timeline-line"></div>
+
+        <div class="timeline-step step-upcoming">
+          <div class="step-marker">
+            <span>3</span>
+          </div>
+          <div class="step-content">
+            <span class="step-title">Platform Access</span>
+            <span class="step-desc">Browse & claim available food</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-callout">
+        <mat-icon class="callout-icon">verified_user</mat-icon>
+        <div class="callout-text">
+          Once your account is approved by an administrator, full access to local food donations, active claims, and pickup coordination will be unlocked automatically.
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="refreshStatus()"
+          [disabled]="isRefreshing()"
+          class="check-btn"
+          type="button">
+          @if (isRefreshing()) {
+            <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+            <span>Checking...</span>
+          } @else {
+            <ng-container>
+              <mat-icon>refresh</mat-icon>
+              <span>Check Approval Status</span>
+            </ng-container>
+          }
+        </button>
+
+        <button
+          mat-stroked-button
+          (click)="onLogout()"
+          class="logout-btn"
+          type="button">
           <mat-icon>logout</mat-icon>
-          Logout
-        </button>
-        <button mat-raised-button color="primary" (click)="refreshStatus()" [disabled]="isRefreshing()">
-          <mat-spinner *ngIf="isRefreshing()" diameter="20" color="accent"></mat-spinner>
-          <span *ngIf="!isRefreshing()">Refresh Status</span>
+          <span>Sign Out</span>
         </button>
       </div>
-    </mat-card-content>
-  </mat-card>
+    </div>
+  </div>
 </div>

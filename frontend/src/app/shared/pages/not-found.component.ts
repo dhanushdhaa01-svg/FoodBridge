@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 import { AuthService } from '../../core/services/auth.service';
 import { APP_ROUTES } from '../../core/constants/app.routes';
@@ -12,7 +13,7 @@ import { APP_ROUTES } from '../../core/constants/app.routes';
   standalone: true,
   templateUrl: './not-found.component.html',
   styleUrl: './not-found.component.scss',
-  imports: [CommonModule, RouterModule, MatButtonModule]
+  imports: [CommonModule, RouterModule, MatButtonModule, MatIconModule]
 })
 export class NotFoundComponent {
   private readonly router = inject(Router);

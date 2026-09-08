@@ -4,6 +4,9 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { config } from './config/env.js';
 import authRoutes from './routes/auth.routes.js';
+import donationRoutes from './routes/donation.routes.js';
+import userRoutes from './routes/user.routes.js';
+import dashboardRoutes from './routes/dashboard.routes.js';
 import errorHandler from './middleware/errorHandler.js';
 import ApiError from './utils/ApiError.js';
 
@@ -51,6 +54,9 @@ app.get(`/api/${config.apiVersion}/health`, (req, res) => {
 
 // ─── API Routes ───────────────────────────────────────────────────────────────
 app.use(`/api/${config.apiVersion}/auth`, authRoutes);
+app.use(`/api/${config.apiVersion}/donations`, donationRoutes);
+app.use(`/api/${config.apiVersion}/users`, userRoutes);
+app.use(`/api/${config.apiVersion}/dashboard`, dashboardRoutes);
 
 // ─── 404 Handler ──────────────────────────────────────────────────────────────
 // Catches any request that did not match a defined route above.

@@ -1,37 +1,127 @@
-<div class="auth-container">
-  <div class="auth-brand">
-    <h1>FoodBridge</h1>
+<div class="auth-page">
+  <!-- Left Hero Panel (Desktop) -->
+  <div class="auth-hero">
+    <div class="hero-content">
+      <div class="hero-brand">
+        <div class="hero-logo-icon">
+          <mat-icon>volunteer_activism</mat-icon>
+        </div>
+        <span class="hero-brand-name">FoodBridge</span>
+      </div>
+
+      <div class="hero-text-block">
+        <h1 class="hero-headline">Turn surplus food into shared hope.</h1>
+        <p class="hero-desc">
+          FoodBridge seamlessly bridges the gap between generous food donors and verified local charities, preventing food waste while feeding communities in need.
+        </p>
+      </div>
+
+      <div class="hero-features">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <mat-icon>bolt</mat-icon>
+          </div>
+          <div class="feature-text">
+            <strong>Real-time Food Alerts</strong>
+            <span>Instant notification when fresh food is ready for pickup.</span>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">
+            <mat-icon>verified_user</mat-icon>
+          </div>
+          <div class="feature-text">
+            <strong>Verified NGO Partners</strong>
+            <span>Direct handoffs to certified shelters, food banks, and charities.</span>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">
+            <mat-icon>eco</mat-icon>
+          </div>
+          <div class="feature-text">
+            <strong>Measurable Environmental Impact</strong>
+            <span>Track every meal saved and emission prevented in real-time.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-footer-note">
+        <span>Empowering communities across India &bull; Zero waste mission</span>
+      </div>
+    </div>
   </div>
-  <mat-card class="auth-card">
-    <mat-card-header>
-      <mat-card-title class="auth-title">Login</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Email</mat-label>
-          <input matInput formControlName="email" type="email" autocomplete="email">
-          <mat-error *ngIf="email?.hasError('required')">Email is required</mat-error>
-          <mat-error *ngIf="email?.hasError('email')">Please enter a valid email</mat-error>
-        </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Password</mat-label>
-          <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password" autocomplete="current-password">
-          <button mat-icon-button matSuffix (click)="togglePasswordVisibility()" type="button" [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'">
-            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+  <!-- Right Form Panel -->
+  <div class="auth-form-container">
+    <div class="auth-card-wrap">
+      <!-- Mobile Brand Header -->
+      <div class="mobile-brand-header">
+        <div class="mobile-logo-icon">
+          <mat-icon>volunteer_activism</mat-icon>
+        </div>
+        <span class="mobile-brand-name">FoodBridge</span>
+      </div>
+
+      <div class="auth-card">
+        <div class="card-header">
+          <h2 class="card-title">Welcome back</h2>
+          <p class="card-subtitle">Sign in with your credentials to manage food donations and rescues</p>
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Email address</mat-label>
+            <mat-icon matPrefix class="field-icon">email</mat-icon>
+            <input matInput formControlName="email" type="email" autocomplete="email" placeholder="name@organization.org">
+            @if (email?.hasError('required') && email?.touched) {
+              <mat-error>Email address is required</mat-error>
+            }
+            @if (email?.hasError('email') && email?.touched) {
+              <mat-error>Please enter a valid email address</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Password</mat-label>
+            <mat-icon matPrefix class="field-icon">lock</mat-icon>
+            <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password" autocomplete="current-password" placeholder="••••••••">
+            <button mat-icon-button matSuffix (click)="togglePasswordVisibility()" type="button"
+              class="password-toggle-btn"
+              [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'">
+              <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            @if (password?.hasError('required') && password?.touched) {
+              <mat-error>Password is required</mat-error>
+            }
+          </mat-form-field>
+
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            class="submit-btn"
+            id="login-submit-btn"
+            [disabled]="loginForm.invalid || isSubmitting()">
+            @if (isSubmitting()) {
+              <mat-spinner diameter="20" class="btn-spinner"></mat-spinner>
+              <span>Signing in...</span>
+            } @else {
+              <ng-container>
+                <span>Sign In to FoodBridge</span>
+                <mat-icon class="btn-arrow">arrow_forward</mat-icon>
+              </ng-container>
+            }
           </button>
-          <mat-error *ngIf="password?.hasError('required')">Password is required</mat-error>
-        </mat-form-field>
+        </form>
 
-        <button mat-raised-button color="primary" type="submit" class="submit-button" [disabled]="loginForm.invalid || isSubmitting()">
-          <mat-spinner *ngIf="isSubmitting()" diameter="20" color="accent"></mat-spinner>
-          <span *ngIf="!isSubmitting()">Login</span>
-        </button>
-      </form>
-    </mat-card-content>
-    <mat-card-actions class="auth-actions">
-      <p>Don't have an account? <a mat-button [routerLink]="appRoutes.REGISTER">Register</a></p>
-    </mat-card-actions>
-  </mat-card>
+        <div class="auth-card-footer">
+          <span class="footer-text">New to FoodBridge?</span>
+          <a [routerLink]="appRoutes.REGISTER" class="footer-link">Create an account</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

@@ -1,0 +1,152 @@
+<div class="admin-donations-page">
+  <div class="page-header">
+    <div class="header-badge">
+      <mat-icon>insights</mat-icon>
+      <span>Platform Oversight</span>
+    </div>
+    <h1>Master Food Donations Log</h1>
+    <p class="subtitle">Real-time repository of all donations, claims, rescues, and distribution statuses</p>
+  </div>
+
+  <!-- Filters Card -->
+  <div class="filter-card">
+    <div class="filter-grid">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Status</mat-label>
+        <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value); onFilterChange()">
+          <mat-option value="all">All Statuses</mat-option>
+          <mat-option value="available">Available</mat-option>
+          <mat-option value="claimed">Claimed</mat-option>
+          <mat-option value="completed">Completed</mat-option>
+          <mat-option value="cancelled">Cancelled</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Food Classification</mat-label>
+        <mat-select [value]="foodTypeFilter()" (selectionChange)="foodTypeFilter.set($event.value); onFilterChange()">
+          <mat-option value="all">All Dietary Types</mat-option>
+          <mat-option value="veg">Vegetarian</mat-option>
+          <mat-option value="non-veg">Non-Vegetarian</mat-option>
+          <mat-option value="vegan">Vegan</mat-option>
+          <mat-option value="jain">Jain</mat-option>
+          <mat-option value="eggetarian">Eggetarian</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Search City</mat-label>
+        <input
+          matInput
+          [value]="cityFilter()"
+          (input)="cityFilter.set($any($event.target).value)"
+          (keyup.enter)="onFilterChange()"
+          placeholder="e.g. Bangalore, Mumbai" />
+      </mat-form-field>
+
+      <div class="filter-buttons">
+        <button mat-flat-button color="primary" class="apply-btn" (click)="onFilterChange()">
+          <mat-icon>filter_alt</mat-icon>
+          <span>Apply</span>
+        </button>
+        <button mat-stroked-button class="reset-btn" (click)="onResetFilters()">
+          <mat-icon>restart_alt</mat-icon>
+          <span>Reset</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="error-banner" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ errorMessage() }}</span>
+      <button mat-button color="primary" (click)="loadDonations()">Retry</button>
+    </div>
+  }
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading donation records...</p>
+    </div>
+  } @else if (donations().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon-wrap">
+        <mat-icon>no_meals</mat-icon>
+      </div>
+      <h3>No Donations Found</h3>
+      <p>No donation records match the specified filters or search queries.</p>
+    </div>
+  } @else {
+    <div class="table-container">
+      <table mat-table [dataSource]="donations()" class="donations-table">
+        <!-- Food Name -->
+        <ng-container matColumnDef="foodName">
+          <th mat-header-cell *matHeaderCellDef>Donation Item</th>
+          <td mat-cell *matCellDef="let item">
+            <span class="food-name-cell">{{ item.foodName }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Food Type -->
+        <ng-container matColumnDef="foodType">
+          <th mat-header-cell *matHeaderCellDef>Category</th>
+          <td mat-cell *matCellDef="let item">
+            <span class="food-type-chip" [class]="'food-type-' + item.foodType">
+              {{ item.foodType }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Quantity -->
+        <ng-container matColumnDef="quantity">
+          <th mat-header-cell *matHeaderCellDef>Portion Size</th>
+          <td mat-cell *matCellDef="let item">
+            <span class="portion-val"><strong>{{ item.quantity }}</strong> {{ item.quantityUnit }}</span>
+          </td>
+        </ng-container>
+
+        <!-- City -->
+        <ng-container matColumnDef="city">
+          <th mat-header-cell *matHeaderCellDef>City</th>
+          <td mat-cell *matCellDef="let item">
+            <span class="city-val">{{ item.city }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Status -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Current State</th>
+          <td mat-cell *matCellDef="let item">
+            <span class="status-badge" [class]="'status-' + item.status">
+              {{ item.status | uppercase }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Created -->
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Date Listed</th>
+          <td mat-cell *matCellDef="let item">
+            <span class="date-cell">{{ formatDate(item.createdAt) }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-header">Details</th>
+          <td mat-cell *matCellDef="let item" class="actions-cell">
+            <a mat-stroked-button [routerLink]="['/donations', item.id]" class="view-btn">
+              <mat-icon>visibility</mat-icon>
+              <span>Inspect</span>
+            </a>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  }
+</div>

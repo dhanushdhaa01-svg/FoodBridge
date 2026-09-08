@@ -1,39 +1,57 @@
-<mat-card class="profile-card">
-  <mat-card-header>
+<div class="profile-card">
+  <div class="profile-header">
     <div class="profile-avatar">
-      <mat-icon>account_circle</mat-icon>
+      {{ user.fullName.charAt(0).toUpperCase() }}
     </div>
-    <div class="profile-header-text">
-      <mat-card-title>{{ user.fullName }}</mat-card-title>
-      <mat-card-subtitle>{{ user.role | titlecase }}</mat-card-subtitle>
-    </div>
-  </mat-card-header>
-  <mat-card-content>
-    <div class="profile-details">
-      <div class="profile-row">
-        <mat-icon>email</mat-icon>
-        <span>{{ user.email }}</span>
-      </div>
-      <div class="profile-row">
-        <mat-icon>phone</mat-icon>
-        <span>{{ user.phone }}</span>
+    <div class="profile-title-area">
+      <div class="name-badge-row">
+        <h3 class="profile-name">{{ user.fullName }}</h3>
+        <span class="role-pill">{{ user.role | titlecase }}</span>
       </div>
       @if (user.organizationName) {
-        <div class="profile-row">
+        <span class="org-name">
           <mat-icon>business</mat-icon>
-          <span>{{ user.organizationName }}</span>
-        </div>
-      }
-      <div class="profile-row">
-        <mat-icon>location_on</mat-icon>
-        <span>{{ user.address }}, {{ user.city }}, {{ user.state }} - {{ user.pincode }}</span>
-      </div>
-      <div class="profile-row">
-        <mat-icon>verified</mat-icon>
-        <span [class.approved]="user.isApproved" [class.pending]="!user.isApproved">
-          {{ user.isApproved ? 'Approved' : 'Pending Approval' }}
+          {{ user.organizationName }}
         </span>
+      }
+    </div>
+    <div class="profile-status">
+      @if (user.role === 'admin') {
+        <span class="status-chip active"><mat-icon>check_circle</mat-icon> Admin Active</span>
+      } @else if (user.role === 'ngo') {
+        <span class="status-chip" [class.active]="user.isApproved" [class.pending]="!user.isApproved">
+          <mat-icon>{{ user.isApproved ? 'verified' : 'pending' }}</mat-icon>
+          {{ user.isApproved ? 'Verified NGO' : 'Pending Approval' }}
+        </span>
+      } @else {
+        <span class="status-chip active"><mat-icon>check_circle</mat-icon> Verified Donor</span>
+      }
+    </div>
+  </div>
+
+  <div class="profile-details-grid">
+    <div class="detail-item">
+      <div class="icon-circle"><mat-icon>email</mat-icon></div>
+      <div class="item-text">
+        <span class="item-label">Email</span>
+        <span class="item-value">{{ user.email }}</span>
       </div>
     </div>
-  </mat-card-content>
-</mat-card>
+
+    <div class="detail-item">
+      <div class="icon-circle"><mat-icon>phone</mat-icon></div>
+      <div class="item-text">
+        <span class="item-label">Phone</span>
+        <span class="item-value">{{ user.phone }}</span>
+      </div>
+    </div>
+
+    <div class="detail-item full-span">
+      <div class="icon-circle"><mat-icon>location_on</mat-icon></div>
+      <div class="item-text">
+        <span class="item-label">Address</span>
+        <span class="item-value">{{ user.address }}, {{ user.city }}, {{ user.state }} - {{ user.pincode }}</span>
+      </div>
+    </div>
+  </div>
+</div>

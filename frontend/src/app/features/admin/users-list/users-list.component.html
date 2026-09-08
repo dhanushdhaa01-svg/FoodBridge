@@ -1,0 +1,163 @@
+<div class="admin-users-page">
+  <div class="page-header">
+    <div class="header-badge">
+      <mat-icon>manage_accounts</mat-icon>
+      <span>User Management</span>
+    </div>
+    <h1>Platform User Registry</h1>
+    <p class="subtitle">Search, filter, and review donors, non-profits, and administrator accounts</p>
+  </div>
+
+  <!-- Filters & Search Toolbar -->
+  <div class="filter-toolbar">
+    <div class="search-wrap">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        type="text"
+        [value]="searchQuery()"
+        (input)="onSearch($event)"
+        placeholder="Search by name, organization, email, or city..."
+        class="custom-search-input" />
+    </div>
+
+    <div class="role-selector-wrap">
+      <mat-form-field appearance="outline" class="role-field">
+        <mat-label>Role Filter</mat-label>
+        <mat-select [value]="roleFilter()" (selectionChange)="onRoleChange($event.value)">
+          <mat-option value="all">All Roles</mat-option>
+          <mat-option value="donor">Donors</mat-option>
+          <mat-option value="ngo">NGOs</mat-option>
+          <mat-option value="admin">Administrators</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="error-banner" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ errorMessage() }}</span>
+      <button mat-button color="primary" (click)="loadUsers()">Retry</button>
+    </div>
+  }
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading registered accounts...</p>
+    </div>
+  } @else if (users().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon-wrap">
+        <mat-icon>group_off</mat-icon>
+      </div>
+      <h3>No Users Found</h3>
+      <p>No user accounts currently match your search query or selected role filter.</p>
+    </div>
+  } @else {
+    <div class="table-container">
+      <table mat-table [dataSource]="users()" class="users-table">
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>User / Entity</th>
+          <td mat-cell *matCellDef="let user">
+            <div class="user-profile-cell">
+              <div class="user-avatar" [class]="'avatar-' + user.role">
+                {{ (user.organizationName || user.fullName).slice(0, 2).toUpperCase() }}
+              </div>
+              <div class="user-name-texts">
+                <span class="user-fullname">{{ user.fullName }}</span>
+                @if (user.organizationName) {
+                  <span class="org-sub">
+                    <mat-icon>business</mat-icon>
+                    {{ user.organizationName }}
+                  </span>
+                }
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Email Column -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let user">
+            <span class="email-text">{{ user.email }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Role Column -->
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef>Role</th>
+          <td mat-cell *matCellDef="let user">
+            <span class="role-badge role-{{ user.role }}">{{ user.role | uppercase }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let user">
+            @if (user.role === 'ngo') {
+              <span class="status-chip" [class.chip-approved]="user.isApproved" [class.chip-pending]="!user.isApproved">
+                <mat-icon class="status-icon">{{ user.isApproved ? 'verified' : 'hourglass_top' }}</mat-icon>
+                <span>{{ user.isApproved ? 'Approved' : 'Pending' }}</span>
+              </span>
+            } @else {
+              <span class="status-chip chip-approved">
+                <mat-icon class="status-icon">check_circle</mat-icon>
+                <span>Active</span>
+              </span>
+            }
+          </td>
+        </ng-container>
+
+        <!-- City Column -->
+        <ng-container matColumnDef="city">
+          <th mat-header-cell *matHeaderCellDef>Location</th>
+          <td mat-cell *matCellDef="let user">
+            <span class="city-text">{{ user.city || '—' }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Joined Column -->
+        <ng-container matColumnDef="joined">
+          <th mat-header-cell *matHeaderCellDef>Joined</th>
+          <td mat-cell *matCellDef="let user">
+            <span class="date-text">{{ formatDate(user.createdAt) }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-header">Actions</th>
+          <td mat-cell *matCellDef="let user" class="actions-cell">
+            @if (user.role === 'ngo' && !user.isApproved) {
+              <button
+                mat-flat-button
+                color="primary"
+                class="approve-mini-btn"
+                [disabled]="approvingUserId() === user.id"
+                (click)="onApproveNgo(user)">
+                @if (approvingUserId() === user.id) {
+                  <mat-spinner diameter="14" class="btn-spinner"></mat-spinner>
+                  <span>Approving</span>
+                } @else {
+                  <ng-container>
+                    <mat-icon>check</mat-icon>
+                    <span>Approve</span>
+                  </ng-container>
+                }
+              </button>
+            } @else {
+              <span class="no-action-dash">—</span>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  }
+</div>

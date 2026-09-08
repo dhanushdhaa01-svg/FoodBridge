@@ -1,11 +1,21 @@
-<div class="quick-actions">
-  <h2>Quick Actions</h2>
+<div class="quick-actions-container">
+  <div class="section-title-wrap">
+    <mat-icon class="section-icon">bolt</mat-icon>
+    <h2 class="section-title">Quick Actions</h2>
+  </div>
+
   <div class="actions-grid">
     @for (action of actions(); track action.label) {
-      <button mat-stroked-button color="primary" disabled type="button">
-        <mat-icon>{{ action.icon }}</mat-icon>
-        <span>{{ action.label }}</span>
-      </button>
+      <a [routerLink]="action.route" class="action-card">
+        <div class="action-icon-wrap">
+          <mat-icon>{{ action.icon }}</mat-icon>
+        </div>
+        <div class="action-info">
+          <span class="action-label">{{ action.label }}</span>
+          <span class="action-hint">Click to navigate</span>
+        </div>
+        <mat-icon class="action-arrow">arrow_forward</mat-icon>
+      </a>
     }
   </div>
 </div>
